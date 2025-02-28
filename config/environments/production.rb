@@ -92,5 +92,5 @@ Rails.application.configure do
   config.active_record.dump_schema_after_migration = false
 
   # Allow requests from Railway domain
-  config.hosts << "rails-production-a617.up.railway.app"
+  config.hosts.clear
 end

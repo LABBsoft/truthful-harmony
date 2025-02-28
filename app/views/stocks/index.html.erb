@@ -154,14 +154,11 @@
     100% { transform: translateY(0) scale(1); }
   }
 
-  .stock-card .premium-badge:has(🔥) {
-    animation: flameFlicker 1.5s ease-in-out infinite;
-  }
-
   .stock-card-hot {
     box-shadow: 0 4px 12px rgba(255, 87, 34, 0.3);
     border-color: #ff5722;
-    animation: flameFlicker 1.5s ease-in-out infinite;
+    animation: flameFlicker 1s ease-in-out 3 forwards;
+    will-change: transform, opacity;
   }
 
   /* Details Section Styles */
