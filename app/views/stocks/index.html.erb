@@ -2,61 +2,65 @@
 
 <div class="stocks-grid">
   <% @stocks.each do |stock| %>
-    <div class="stock-card">
-      <div class="stock-header">
-        <div class="header-content">
-          <h2><%= stock.company_name %></h2>
-          <h3><%= stock.ticker %></h3>
+  <%= link_to stock_path(stock), class: 'stock-card-link' do %>
+        <div class="stock-card <%= 'stock-card-hot' if stock.premium_discount.abs > 30 %>">
+        <div class="stock-header">
+            <div class="header-content">
+            <h2><%= stock.company_name %></h2>
+            <h3><%= stock.ticker %></h3>
+            </div>
+            <div class="premium-badge <%= stock.premium_discount >= 0 ? 'negative' : 'positive' %>">
+              <% if stock.premium_discount.abs > 30 %>🔥<% end %>
+              <%= number_to_percentage(stock.premium_discount, precision: 2) %>
+              <% if stock.premium_discount.abs > 30 %>🔥<% end %>
+            </div>
         </div>
-        <div class="premium-badge <%= stock.premium_discount >= 0 ? 'positive' : 'negative' %>">
-          <%= number_to_percentage(stock.premium_discount, precision: 2) %>
-        </div>
-      </div>
 
-      <div class="stock-details">
-        <div class="detail-row">
-          <span class="label">Sector:</span>
-          <span class="value"><%= stock.sector %></span>
+        <div class="stock-details">
+            <div class="detail-row">
+            <span class="label">Sector:</span>
+            <span class="value"><%= stock.sector %></span>
+            </div>
+            
+            <div class="detail-row">
+            <span class="label">Market Cap (M):</span>
+            <span class="value"><%= number_to_human(stock.market_cap) %></span>
+            </div>
+            
+            <div class="detail-row">
+            <span class="label">Dividend Yield:</span>
+            <span class="value"><%= number_to_percentage(stock.dividend_yield, precision: 2) %></span>
+            </div>
+            
+            <div class="detail-row">
+            <span class="label">P/E Ratio:</span>
+            <span class="value"><%= number_with_precision(stock.pe_ratio, precision: 2) %></span>
+            </div>
+            
+            <div class="detail-row">
+            <span class="label">Premium/Discount:</span>
+            <span class="value"><%= number_to_percentage(stock.premium_discount, precision: 2) %></span>
+            </div>
         </div>
-        
-        <div class="detail-row">
-          <span class="label">Market Cap (M):</span>
-          <span class="value"><%= number_to_human(stock.market_cap) %></span>
-        </div>
-        
-        <div class="detail-row">
-          <span class="label">Dividend Yield:</span>
-          <span class="value"><%= number_to_percentage(stock.dividend_yield, precision: 2) %></span>
-        </div>
-        
-        <div class="detail-row">
-          <span class="label">P/E Ratio:</span>
-          <span class="value"><%= number_with_precision(stock.pe_ratio, precision: 2) %></span>
-        </div>
-        
-        <div class="detail-row">
-          <span class="label">Premium/Discount:</span>
-          <span class="value"><%= number_to_percentage(stock.premium_discount, precision: 2) %></span>
-        </div>
-      </div>
 
-      <div class="stock-actions">
-        <%= link_to 'Show', stock_path(stock), class: 'button' %>
-        <%= link_to 'Edit', edit_stock_path(stock), class: 'button' %>
-        <%= link_to 'Delete', stock_path(stock), 
-                    method: :delete,
-                    data: { confirm: 'Are you sure?' },
-                    class: 'button delete' %>
-      </div>
-    </div>
+        </div>
+    <% end %>
   <% end %>
 </div>
 
 <style>
+    :root {
+    --primary: #2d2d2d;
+    --secondary: #3a3a3a;
+    --accent: #4a4a9c;
+    --accent-light: #5a5ab0;
+    --text-primary: #e0e0e0;
+    --text-secondary: #b0b0b0;
+  }
   /* Base Styles */
   body {
     background-color: #1a1a1a;
-    color: #e0e0e0;
+    color: var(--text-primary);
   }
 
   /* Grid Layout */
@@ -69,18 +73,26 @@
     gap: 20px;
   }
 
+  .stock-card-link {
+    text-decoration: none;
+    display: block;
+  }
+
   /* Card Styles */
   .stock-card {
-    background: #2d2d2d;
+    background: radial-gradient(circle at top left, var(--secondary), var(--primary));
+    border: 1px solid var(--accent);
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     padding: 20px;
-    transition: transform 0.2s;
+    transition: all 0.3s ease;
+    color: var(--text-primary);
   }
 
   .stock-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 12px rgba(74, 74, 156, 0.3);
+    border-color: var(--accent-light);
   }
 
   /* Header Styles */
@@ -88,7 +100,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #404040;
+    border-bottom: 1px solid var(--accent);
     padding-bottom: 10px;
     margin-bottom: 15px;
   }
@@ -99,13 +111,14 @@
 
   .stock-header h2 {
     margin: 0;
-    color: #ffffff;
+    color: var(--text-primary);
     font-size: 24px;
+    text-shadow: 0 0 10px rgba(74, 74, 156, 0.3);
   }
 
   .stock-header h3 {
     margin: 5px 0 0;
-    color: #b0b0b0;
+    color: var(--text-primary);
     font-size: 16px;
   }
 
@@ -119,16 +132,36 @@
     font-weight: 600;
     height: 32px;        /* Added fixed height */
     min-width: 80px;
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(5px);
+    border: 1px solid currentColor;
   }
 
   .premium-badge.positive {
-    background-color: #1b5e20;
-    color: #ffffff;
+    background: linear-gradient(145deg, #1b5e20, #2e7d32);
+    border-color: #4caf50;
   }
 
   .premium-badge.negative {
-    background-color: #b71c1c;
-    color: #ffffff;
+    background: linear-gradient(145deg, #b71c1c, #c62828);
+    border-color: #ef5350;
+  }
+
+  /* Fire Animation */
+  @keyframes flameFlicker {
+    0% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-2px) scale(1.02); }
+    100% { transform: translateY(0) scale(1); }
+  }
+
+  .stock-card .premium-badge:has(🔥) {
+    animation: flameFlicker 1.5s ease-in-out infinite;
+  }
+
+  .stock-card-hot {
+    box-shadow: 0 4px 12px rgba(255, 87, 34, 0.3);
+    border-color: #ff5722;
+    animation: flameFlicker 1.5s ease-in-out infinite;
   }
 
   /* Details Section Styles */
@@ -144,13 +177,21 @@
     align-items: center;
   }
 
+  .detail-row:hover {
+    background: rgba(74, 74, 156, 0.1);
+    border-radius: 4px;
+    padding: 4px 8px;
+    margin: -4px -8px;
+    transition: background 0.2s ease;
+  }
+
   .label {
-    color: #b0b0b0;
+    color: var(--text-primary);
     font-weight: 500;
   }
 
   .value {
-    color: #e0e0e0;
+    color: var(--text-primary);
     font-weight: 600;
   }
 
