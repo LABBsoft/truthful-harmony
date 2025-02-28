@@ -1,15 +1,19 @@
 <h1>Shohei Ohtani's Translator's Top Stocks</h1>
 
-
 <div class="stocks-grid">
   <% @stocks.each do |stock| %>
     <div class="stock-card">
       <div class="stock-header">
-        <h2><%= stock.company_name %></h2>
-        <h3><%= stock.ticker %></h3>
-      </div>      
+        <div class="header-content">
+          <h2><%= stock.company_name %></h2>
+          <h3><%= stock.ticker %></h3>
+        </div>
+        <div class="premium-badge <%= stock.premium_discount >= 0 ? 'positive' : 'negative' %>">
+          <%= number_to_percentage(stock.premium_discount, precision: 2) %>
+        </div>
+      </div>
+
       <div class="stock-details">
-        
         <div class="detail-row">
           <span class="label">Sector:</span>
           <span class="value"><%= stock.sector %></span>
@@ -40,21 +44,22 @@
         <%= link_to 'Show', stock_path(stock), class: 'button' %>
         <%= link_to 'Edit', edit_stock_path(stock), class: 'button' %>
         <%= link_to 'Delete', stock_path(stock), 
-            method: :delete,
-            data: { confirm: 'Are you sure?' },
-            class: 'button delete' %>
+                    method: :delete,
+                    data: { confirm: 'Are you sure?' },
+                    class: 'button delete' %>
       </div>
     </div>
   <% end %>
 </div>
 
-<br>
 <style>
+  /* Base Styles */
   body {
     background-color: #1a1a1a;
     color: #e0e0e0;
   }
 
+  /* Grid Layout */
   .stocks-grid {
     max-width: 800px;
     margin: 0 auto;
@@ -64,6 +69,7 @@
     gap: 20px;
   }
 
+  /* Card Styles */
   .stock-card {
     background: #2d2d2d;
     border-radius: 8px;
@@ -77,10 +83,18 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   }
 
+  /* Header Styles */
   .stock-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     border-bottom: 1px solid #404040;
     padding-bottom: 10px;
     margin-bottom: 15px;
+  }
+
+  .header-content {
+    flex: 1;
   }
 
   .stock-header h2 {
@@ -95,6 +109,29 @@
     font-size: 16px;
   }
 
+  /* Premium Badge Styles */
+  .premium-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 15px;
+    border-radius: 50px;  /* Changed from 4px to 50px for round corners */
+    font-weight: 600;
+    height: 32px;        /* Added fixed height */
+    min-width: 80px;
+  }
+
+  .premium-badge.positive {
+    background-color: #1b5e20;
+    color: #ffffff;
+  }
+
+  .premium-badge.negative {
+    background-color: #b71c1c;
+    color: #ffffff;
+  }
+
+  /* Details Section Styles */
   .stock-details {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -117,6 +154,7 @@
     font-weight: 600;
   }
 
+  /* Action Buttons Styles */
   .stock-actions {
     margin-top: 20px;
     padding-top: 15px;
